@@ -1,0 +1,5 @@
+name: AppLaunch Template Deploy
+
+on:
+  workflow_dispatch:
+
