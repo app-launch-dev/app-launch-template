@@ -19,7 +19,7 @@ jobs:
         uses: AndreasAugustin/actions-template-sync@v1
         with:
           github_token: ${{ secrets.AppLaunch_Token }}
-          source_repo_path: applaunch/template
+          source_repo_path: app-launch-dev/app-launch-template
           upstream_branch: main
           pr_branch: main  # 👈 This is the key: sync directly into main
           create_pull_request: false
