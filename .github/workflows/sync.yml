@@ -19,6 +19,6 @@ jobs:
       - name: Sync from Template
         uses: AndreasAugustin/actions-template-sync@v1
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.AppLaunch_Token }}
           source_repo_path: app-launch-dev/app-launch-template
           upstream_branch: main
