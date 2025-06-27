@@ -1,5 +1,68 @@
 name: AppLaunch Template Deploy
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
 
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 9 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Publish .NET 9 Project
+        run: dotnet publish -c Release -o publish_output
+
+      - name: Install LFTP
+        run: sudo apt-get update && sudo apt-get install -y lftp
+
+      - name: Create app_offline.htm
+        run: |
+          echo '<html><head><title>Site Offline</title></head><body><h1>We are updating the site. Please check back soon.</h1></body></html>' > app_offline.htm
+
+      - name: Upload app_offline.htm to take site offline
+        env:
+          FTPS_HOST: ${{ secrets.FTPS_HOST }}
+          FTPS_USER: ${{ secrets.FTPS_USER }}
+          FTPS_PASS: ${{ secrets.FTPS_PASS }}
+        run: |
+          lftp -c "
+          set ftp:ssl-force true;
+          set ssl:verify-certificate yes;
+          open -u $FTPS_USER,$FTPS_PASS $FTPS_HOST;
+          put -O ./ app_offline.htm
+          "
+
+      - name: Deploy Published Output via FTPS (no delete, exclude applaunch.json)
+        env:
+          FTPS_HOST: ${{ secrets.FTPS_HOST }}
+          FTPS_USER: ${{ secrets.FTPS_USER }}
+          FTPS_PASS: ${{ secrets.FTPS_PASS }}
+        run: |
+          lftp -c "
+          set ftp:ssl-force true;
+          set ssl:verify-certificate yes;
+          open -u $FTPS_USER,$FTPS_PASS $FTPS_HOST;
+          set cmd:fail-exit no;
+          mirror --reverse --verbose --no-perms --exclude 'applaunch.json' ./publish_output/ ./;
+          "
+
+      - name: Remove app_offline.htm to bring site online
+        env:
+          FTPS_HOST: ${{ secrets.FTPS_HOST }}
+          FTPS_USER: ${{ secrets.FTPS_USER }}
+          FTPS_PASS: ${{ secrets.FTPS_PASS }}
+        run: |
+          lftp -c "
+          set ftp:ssl-force true;
+          set ssl:verify-certificate yes;
+          open -u $FTPS_USER,$FTPS_PASS $FTPS_HOST;
+          rm app_offline.htm
+          "
