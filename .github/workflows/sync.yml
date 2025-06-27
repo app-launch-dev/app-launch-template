@@ -27,7 +27,7 @@ jobs:
 
       - name: Merge upstream/main into current main
         env:
-          GITHUB_TOKEN: ${{ secrets.APPLAUNCH_TOKEN }}
+          PAT: ${{ secrets.APPLAUNCH_TOKEN }}
         run: |
           git checkout main
           git merge upstream/main --allow-unrelated-histories --no-edit || true
@@ -39,5 +39,5 @@ jobs:
           done
       
           git commit -m "Auto-merged from upstream with theirs strategy" || echo "No changes to commit"
-          git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }} HEAD:main
+          git push https://x-access-token:${PAT}@github.com/${{ github.repository }} HEAD:main
 
