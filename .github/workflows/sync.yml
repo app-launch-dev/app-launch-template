@@ -1,4 +1,4 @@
-name: Sync with Upstream Template
+name: AppLaunch Template Sync
 
 on:
   schedule:
@@ -6,20 +6,27 @@ on:
   workflow_dispatch:
 
 jobs:
-  direct-sync:
+  sync-template:
     runs-on: ubuntu-latest
     permissions:
       contents: write
 
     steps:
-      - name: Checkout
+      - name: Checkout downstream repo
         uses: actions/checkout@v4
 
-      - name: Sync from Template
-        uses: AndreasAugustin/actions-template-sync@v1
-        with:
-          github_token: ${{ secrets.AppLaunch_Token }}
-          source_repo_path: app-launch-dev/app-launch-template
-          upstream_branch: main
-          pr_branch: main  # 👈 This is the key: sync directly into main
-          create_pull_request: false
+      - name: Configure Git
+        run: |
+          git config user.name "AppLaunch Template Bot"
+          git config user.email "bot@applaunch.dev"
+
+      - name: Add upstream template
+        run: |
+          git remote add upstream https://github.com/app-launch-dev/app-launch-template.git
+          git fetch upstream
+
+      - name: Merge upstream/main into current main
+        run: |
+          git checkout main
+          git merge upstream/main --no-edit
+          git push origin main
