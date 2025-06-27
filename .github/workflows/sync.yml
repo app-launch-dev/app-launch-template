@@ -31,13 +31,39 @@ jobs:
         run: |
           git checkout main
           git merge upstream/main --allow-unrelated-histories --no-edit || true
-      
-          # Overwrite all conflicted files with upstream version
+
+          # Handle merge conflicts by favoring the upstream version
           git diff --name-only --diff-filter=U | while read file; do
+            echo "⛔ Conflict detected in $file — taking theirs"
             git checkout --theirs "$file"
             git add "$file"
           done
-      
-          git commit -m "Auto-merged from upstream with theirs strategy" || echo "No changes to commit"
-          git push https://x-access-token:${PAT}@github.com/${{ github.repository }} HEAD:main
 
+          git commit -m "🔄 Auto-merged from upstream with theirs strategy" || echo "✅ Nothing to commit — working tree clean"
+
+      - name: Set Remote to Use PAT
+        env:
+          PAT: ${{ secrets.APPLAUNCH_TOKEN }}
+        run: |
+          echo "🔧 Overriding origin with PAT-authenticated URL"
+          git remote set-url origin https://x-access-token:${PAT}@github.com/${{ github.repository }}
+
+      - name: Debug Git Remote & Identity
+        env:
+          PAT: ${{ secrets.APPLAUNCH_TOKEN }}
+        run: |
+          echo "🔎 Remotes:"
+          git remote -v
+
+          echo "🔎 Git User Info:"
+          git config user.name
+          git config user.email
+
+          echo "🔎 PAT Token Length:"
+          echo ${#PAT}
+
+      - name: Push merged changes to main
+        env:
+          PAT: ${{ secrets.APPLAUNCH_TOKEN }}
+        run: |
+          git push origin HEAD:main || echo "🚫 Push failed — check token scopes and repo collaboration settings"
