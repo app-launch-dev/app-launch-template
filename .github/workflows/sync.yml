@@ -15,7 +15,7 @@ jobs:
       - name: Checkout downstream repo
         uses: actions/checkout@v4
 
-      - name: Configure Git
+      - name: Configure Git Identity
         run: |
           git config user.name "AppLaunch Template Bot"
           git config user.email "bot@applaunch.dev"
@@ -32,38 +32,39 @@ jobs:
           git checkout main
           git merge upstream/main --allow-unrelated-histories --no-edit || true
 
-          # Handle merge conflicts by favoring the upstream version
+          # Resolve any conflicts using upstream's version
           git diff --name-only --diff-filter=U | while read file; do
-            echo "⛔ Conflict detected in $file — taking theirs"
+            echo "⛔ Conflict in $file — using upstream version"
             git checkout --theirs "$file"
             git add "$file"
           done
 
-          git commit -m "🔄 Auto-merged from upstream with theirs strategy" || echo "✅ Nothing to commit — working tree clean"
+          git commit -m "🔄 Auto-merged from upstream with upstream-preferred conflict resolution" || echo "✅ No changes to commit"
 
-      - name: Set Remote to Use PAT
+      - name: Remove GitHub Actions credential header
+        run: |
+          git config --unset-all http.https://github.com/.extraheader || true
+
+      - name: Override remote URL with PAT
         env:
           PAT: ${{ secrets.APPLAUNCH_TOKEN }}
         run: |
-          echo "🔧 Overriding origin with PAT-authenticated URL"
           git remote set-url origin https://x-access-token:${PAT}@github.com/${{ github.repository }}
 
-      - name: Debug Git Remote & Identity
+      - name: Debug Git Identity and Remote
         env:
           PAT: ${{ secrets.APPLAUNCH_TOKEN }}
         run: |
-          echo "🔎 Remotes:"
+          echo "🔍 Remotes:"
           git remote -v
-
-          echo "🔎 Git User Info:"
+          echo "🔍 Git Identity:"
           git config user.name
           git config user.email
-
-          echo "🔎 PAT Token Length:"
+          echo "🔍 PAT Token Length:"
           echo ${#PAT}
 
       - name: Push merged changes to main
         env:
           PAT: ${{ secrets.APPLAUNCH_TOKEN }}
         run: |
-          git push origin HEAD:main || echo "🚫 Push failed — check token scopes and repo collaboration settings"
+          git push origin HEAD:main || echo "🚫 Push failed — check token scopes or collaborator access"
