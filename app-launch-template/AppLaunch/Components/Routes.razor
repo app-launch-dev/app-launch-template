@@ -1,0 +1,32 @@
+﻿@using System.Reflection
+@inject PluginManager PluginManager
+
+<Router AppAssembly="typeof(Program).Assembly" AdditionalAssemblies="@additionalAssemblies">
+    <Found Context="routeData">
+        <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(AppLaunch.Themes.Layout.AppLaunchDefault)">
+            <NotAuthorized>
+                <RedirectToLogin/>
+            </NotAuthorized>
+        </AuthorizeRouteView>
+    </Found>
+</Router>
+
+@code {
+    private List<Assembly> additionalAssemblies = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        additionalAssemblies.Add(typeof(AppLaunch.Admin._Imports).Assembly);
+
+        var runningPlugins = PluginManager.LoadRunningPlugins();
+        foreach (var pluginName in runningPlugins)
+        {
+            var assembly = PluginManager.GetPluginAssembly(pluginName);
+            if (assembly != null)
+            {
+                additionalAssemblies.Add(assembly);
+            }
+        }
+    }
+
+}
