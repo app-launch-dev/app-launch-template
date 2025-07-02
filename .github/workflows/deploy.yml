@@ -29,9 +29,9 @@ jobs:
 
       - name: Upload app_offline.htm to take site offline
         env:
-          FTPS_HOST: ${{ secrets.FTPS_HOST }}
-          FTPS_USER: ${{ secrets.FTPS_USER }}
-          FTPS_PASS: ${{ secrets.FTPS_PASS }}
+          FTPS_HOST: ${{ secrets.APPLAUNCH_FTPS_HOST }}
+          FTPS_USER: ${{ secrets.APPLAUNCH_FTPS_USER }}
+          FTPS_PASS: ${{ secrets.APPLAUNCH_FTPS_PASS }}
         run: |
           lftp -c "
           set ftp:ssl-force true;
@@ -42,9 +42,9 @@ jobs:
 
       - name: Deploy Published Output via FTPS (no delete, exclude applaunch.json)
         env:
-          FTPS_HOST: ${{ secrets.FTPS_HOST }}
-          FTPS_USER: ${{ secrets.FTPS_USER }}
-          FTPS_PASS: ${{ secrets.FTPS_PASS }}
+          FTPS_HOST: ${{ secrets.APPLAUNCH_FTPS_HOST }}
+          FTPS_USER: ${{ secrets.APPLAUNCH_FTPS_USER }}
+          FTPS_PASS: ${{ secrets.APPLAUNCH_FTPS_PASS }}
         run: |
           lftp -c "
           set ftp:ssl-force true;
@@ -56,9 +56,9 @@ jobs:
 
       - name: Remove app_offline.htm to bring site online
         env:
-          FTPS_HOST: ${{ secrets.FTPS_HOST }}
-          FTPS_USER: ${{ secrets.FTPS_USER }}
-          FTPS_PASS: ${{ secrets.FTPS_PASS }}
+          FTPS_HOST: ${{ secrets.APPLAUNCH_FTPS_HOST }}
+          FTPS_USER: ${{ secrets.APPLAUNCH_FTPS_USER }}
+          FTPS_PASS: ${{ secrets.APPLAUNCH_FTPS_PASS }}
         run: |
           lftp -c "
           set ftp:ssl-force true;
