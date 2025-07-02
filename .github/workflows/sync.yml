@@ -36,37 +36,50 @@ jobs:
           git remote add upstream https://github.com/app-launch-dev/app-launch-template.git
           git fetch upstream
 
-      - name: Merge upstream/main into current main
+      - name: 🧰 Backup downstream custom files/folders
+        run: |
+          mkdir -p .applaunch-backup
+          cp -a app-launch-template.sln .applaunch-backup/ 2>/dev/null || true
+          cp -a Directory.Plugins.props .applaunch-backup/ 2>/dev/null || true
+          cp -a PluginSource .applaunch-backup/PluginSource 2>/dev/null || true
+          cp -a PluginData .applaunch-backup/PluginData 2>/dev/null || true
+
+      - name: 🔄 Merge with upstream (preserving key files)
         env:
           PAT: ${{ secrets.APPLAUNCH_TOKEN }}
         run: |
           git checkout main
-          git merge upstream/main --allow-unrelated-histories --no-edit || true
+          git fetch upstream
+          git merge upstream/main --no-commit --no-ff || echo "⚠️ Merge conflicts may exist"
 
-          # Resolve conflicts in favor of upstream
-          git diff --name-only --diff-filter=U | while read file; do
-            echo "⛔ Conflict in $file — using upstream version"
-            git checkout --theirs "$file"
-            git add "$file"
+          # Protect .sln and props file if modified
+          PROTECTED=("app-launch-template.sln" "Directory.Plugins.props")
+          for file in "${PROTECTED[@]}"; do
+            if git diff --name-only --diff-filter=U | grep -q "$file"; then
+              echo "🛡️ Preserving downstream version of $file"
+              git restore --source=HEAD --staged --worktree "$file"
+            fi
           done
 
-          git commit -m "🔄 Auto-merged from upstream with upstream-preferred conflict resolution" || echo "✅ No changes to commit"
-
-      - name: 🧹 Remove files and folders excluded from sync
-        run: |
-          echo "Removing .sln files, Directory.Plugins.props, PluginSource/, and PluginData/"
-          rm -f ./*.sln
-          rm -f Directory.Plugins.props
-          rm -rf PluginSource/
-          rm -rf PluginData/
-
-          git rm -rf --cached ./*.sln || true
-          git rm -rf --cached Directory.Plugins.props || true
-          git rm -rf --cached PluginSource || true
-          git rm -rf --cached PluginData || true
-
           git add .
-          git commit -m "🚫 Removed excluded files/folders from sync" || echo "✅ Nothing to remove"
+          git commit -m "🔄 Merged from upstream with downstream file protection" || echo "✅ No changes to commit"
+
+      - name: ♻️ Restore downstream folders
+        run: |
+          echo "🔁 Restoring PluginSource and PluginData from backup"
+          cp -a .applaunch-backup/app-launch-template.sln . 2>/dev/null || true
+          cp -a .applaunch-backup/Directory.Plugins.props . 2>/dev/null || true
+          rm -rf PluginSource
+          rm -rf PluginData
+          cp -a .applaunch-backup/PluginSource . 2>/dev/null || true
+          cp -a .applaunch-backup/PluginData . 2>/dev/null || true
+
+          git add app-launch-template.sln || true
+          git add Directory.Plugins.props || true
+          git add PluginSource || true
+          git add PluginData || true
+
+          git commit -m "♻️ Restored downstream custom files/folders after sync" || echo "✅ No downstream customizations changed"
 
       - name: Remove GitHub Actions credential header
         run: |
@@ -88,7 +101,7 @@ jobs:
           echo "🔍 PAT Token Length:"
           echo ${#PAT}
 
-      - name: Push merged changes to main
+      - name: 📤 Push merged changes to main
         env:
           PAT: ${{ secrets.APPLAUNCH_TOKEN }}
         run: |
