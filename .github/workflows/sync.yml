@@ -43,7 +43,7 @@ jobs:
           git checkout main
           git merge upstream/main --allow-unrelated-histories --no-edit || true
 
-          # Resolve any conflicts using upstream's version
+          # Resolve conflicts in favor of upstream
           git diff --name-only --diff-filter=U | while read file; do
             echo "⛔ Conflict in $file — using upstream version"
             git checkout --theirs "$file"
@@ -51,6 +51,22 @@ jobs:
           done
 
           git commit -m "🔄 Auto-merged from upstream with upstream-preferred conflict resolution" || echo "✅ No changes to commit"
+
+      - name: 🧹 Remove files and folders excluded from sync
+        run: |
+          echo "Removing .sln files, Directory.Plugins.props, PluginSource/, and PluginData/"
+          rm -f ./*.sln
+          rm -f Directory.Plugins.props
+          rm -rf PluginSource/
+          rm -rf PluginData/
+
+          git rm -rf --cached ./*.sln || true
+          git rm -rf --cached Directory.Plugins.props || true
+          git rm -rf --cached PluginSource || true
+          git rm -rf --cached PluginData || true
+
+          git add .
+          git commit -m "🚫 Removed excluded files/folders from sync" || echo "✅ Nothing to remove"
 
       - name: Remove GitHub Actions credential header
         run: |
@@ -63,8 +79,6 @@ jobs:
           git remote set-url origin https://x-access-token:${PAT}@github.com/${{ github.repository }}
 
       - name: Debug Git Identity and Remote
-        env:
-          PAT: ${{ secrets.APPLAUNCH_TOKEN }}
         run: |
           echo "🔍 Remotes:"
           git remote -v
