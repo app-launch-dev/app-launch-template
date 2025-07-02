@@ -16,12 +16,11 @@ Workflows: Read and write
 #Adding Secrets
 In your repository, go to Settings - Secrets and variables - Actions
 Create the following Repository secrets:
-1. APPLAUNCH_SECRET: [PASTE YOUR TOKEN]
+1. APPLAUNCH_TOKEN: [PASTE YOUR TOKEN]
 2. APPLAUNCH_FTPS_HOST: [Your FTPS Hostname]
 3. APPLAUNCH_FTPS_USER: [Your FTPS Username]
 4. APPLAUNCH_FTPS_PASS [Your FTPS Password]
 
-5. 
 
 
 
