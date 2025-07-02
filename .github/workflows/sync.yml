@@ -13,6 +13,16 @@ jobs:
       contents: write
 
     steps:
+      - name: ✅ Validate Required Secrets
+        env:
+          PAT: ${{ secrets.APPLAUNCH_TOKEN }}
+        run: |
+          if [ -z "$PAT" ]; then
+            echo "❌ Required secret 'APPLAUNCH_TOKEN' is missing."
+            echo "ℹ️  Please add it to your repository secrets to enable syncing."
+            exit 1
+          fi
+
       - name: Checkout downstream repo
         uses: actions/checkout@v4
 
