@@ -19,7 +19,6 @@ jobs:
         run: |
           if [ -z "$PAT" ]; then
             echo "❌ Required secret 'APPLAUNCH_TOKEN' is missing."
-            echo "ℹ️  Please add it to your repository secrets to enable syncing."
             exit 1
           fi
 
@@ -52,7 +51,6 @@ jobs:
           git fetch upstream
           git merge upstream/main --no-commit --no-ff || echo "⚠️ Merge conflicts may exist"
 
-          # Protect .sln and props file if modified
           PROTECTED=("app-launch-template.sln" "Directory.Plugins.props")
           for file in "${PROTECTED[@]}"; do
             if git diff --name-only --diff-filter=U | grep -q "$file"; then
@@ -64,7 +62,7 @@ jobs:
           git add .
           git commit -m "🔄 Merged from upstream with downstream file protection" || echo "✅ No changes to commit"
 
-      - name: ♻️ Restore downstream folders
+      - name: ♻️ Restore downstream plugin folders
         run: |
           echo "🔁 Restoring PluginSource and PluginData from backup"
           cp -a .applaunch-backup/app-launch-template.sln . 2>/dev/null || true
