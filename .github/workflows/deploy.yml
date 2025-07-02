@@ -9,7 +9,23 @@ jobs:
   deploy:
     if: github.repository != 'app-launch-dev/app-launch-template'
     runs-on: ubuntu-latest
+
     steps:
+      - name: ✅ Validate Required Secrets
+        env:
+          HOST: ${{ secrets.APPLAUNCH_FTPS_HOST }}
+          USER: ${{ secrets.APPLAUNCH_FTPS_USER }}
+          PASS: ${{ secrets.APPLAUNCH_FTPS_PASS }}
+        run: |
+          if [ -z "$HOST" ] || [ -z "$USER" ] || [ -z "$PASS" ]; then
+            echo "❌ One or more required FTPS secrets are missing:"
+            echo "   - APPLAUNCH_FTPS_HOST"
+            echo "   - APPLAUNCH_FTPS_USER"
+            echo "   - APPLAUNCH_FTPS_PASS"
+            echo "ℹ️  Please add them to your repository secrets to enable deployment."
+            exit 1
+          fi
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
