@@ -7,6 +7,7 @@ on:
 
 jobs:
   deploy:
+    if: github.repository != 'app-launch-dev/app-launch-template'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
