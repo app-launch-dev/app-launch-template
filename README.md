@@ -21,6 +21,8 @@ Create the following Repository secrets:
 3. APPLAUNCH_FTPS_USER: [Your FTPS Username]
 4. APPLAUNCH_FTPS_PASS [Your FTPS Password]
 
+5. 
+
 
 
 
