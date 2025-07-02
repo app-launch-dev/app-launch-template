@@ -7,6 +7,7 @@ on:
 
 jobs:
   sync-template:
+    if: github.repository != 'app-launch-dev/app-launch-template'
     runs-on: ubuntu-latest
     permissions:
       contents: write
