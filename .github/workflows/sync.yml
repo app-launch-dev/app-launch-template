@@ -36,8 +36,6 @@ jobs:
           git fetch upstream
 
       - name: 🔄 Merge upstream/main into current main
-        env:
-          PAT: ${{ secrets.APPLAUNCH_TOKEN }}
         run: |
           git checkout main
           git merge upstream/main --allow-unrelated-histories --no-edit || echo "⚠️ Merge completed with conflicts"
