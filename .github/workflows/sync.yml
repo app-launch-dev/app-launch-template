@@ -32,21 +32,21 @@ jobs:
 
       - name: Add upstream template
         run: |
-          git remote add upstream https://github.com/app-launch-dev/app-launch-template.git
+          git remote add upstream https://github.com/app-launch-dev/app-launch-template.git || true
           git fetch upstream
 
-      - name: ⛔ Merge upstream/main into current main
+      - name: 🔄 Merge upstream/main into current main
         env:
           PAT: ${{ secrets.APPLAUNCH_TOKEN }}
         run: |
           git checkout main
-          git merge upstream/main --no-edit || echo "⚠️ Merge completed with conflicts"
-          
-          echo "🔁 Reverting protected files to pre-merge versions"
-          git restore --source=HEAD --staged --worktree app-launch-template.sln Directory.Plugins.props PluginSource PluginData || echo "✅ Nothing to restore"
+          git merge upstream/main --allow-unrelated-histories --no-edit || echo "⚠️ Merge completed with conflicts"
+
+          echo "🛡️ Reverting protected paths to preserve downstream edits"
+          git restore --source=HEAD --staged --worktree app-launch-template.sln Directory.Plugins.props PluginSource/ PluginData/ || echo "✅ Nothing to restore"
 
           git add .
-          git commit -m "🔄 Synced upstream changes, preserved protected files"
+          git commit -m "🔄 Synced upstream changes, preserved protected files" || echo "✅ No changes to commit"
 
       - name: Remove GitHub Actions credential header
         run: |
