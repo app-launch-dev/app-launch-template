@@ -1,1 +1,0 @@
-This folder is where source code for plugins should be created. It will not be overridden by automatic updates.
