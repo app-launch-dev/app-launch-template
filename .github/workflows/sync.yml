@@ -30,21 +30,22 @@ jobs:
           git config user.name "AppLaunch Template Bot"
           git config user.email "bot@applaunch.dev"
 
-      - name: Add upstream template
+      - name: Add upstream template and fetch latest changes
         run: |
           git remote add upstream https://github.com/app-launch-dev/app-launch-template.git || true
           git fetch upstream
 
-      - name: 🔄 Merge upstream/main into current main
+      - name: 🧼 Checkout upstream changes except protected files
         run: |
-          git checkout main
-          git merge upstream/main --allow-unrelated-histories --no-edit || echo "⚠️ Merge completed with conflicts"
-
-          echo "🛡️ Reverting protected paths to preserve downstream edits"
-          git restore --source=HEAD --staged --worktree app-launch-template.sln Directory.Plugins.props PluginSource/ PluginData/ || echo "✅ Nothing to restore"
+          echo "📥 Syncing upstream changes — excluding protected paths"
+          git checkout upstream/main -- . \
+            ':!app-launch-template.sln' \
+            ':!Directory.Plugins.props' \
+            ':!PluginSource/' \
+            ':!PluginData/'
 
           git add .
-          git commit -m "🔄 Synced upstream changes, preserved protected files" || echo "✅ No changes to commit"
+          git commit -m "🔄 Synced upstream template updates (protected files excluded)" || echo "✅ No changes to commit"
 
       - name: Remove GitHub Actions credential header
         run: |
@@ -56,7 +57,7 @@ jobs:
         run: |
           git remote set-url origin https://x-access-token:${PAT}@github.com/${{ github.repository }}
 
-      - name: 📤 Push merged changes to main
+      - name: 📤 Push synced changes to downstream
         env:
           PAT: ${{ secrets.APPLAUNCH_TOKEN }}
         run: |
