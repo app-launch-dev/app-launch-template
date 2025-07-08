@@ -9,11 +9,29 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="AppLaunch.Admin" />
-        <PackageReference Include="AppLaunch.Models" />
-        <PackageReference Include="AppLaunch.Services" />
-        <PackageReference Include="AppLaunch.Themes" />
+        <Reference Include="AppLaunch.Admin">
+            <HintPath>$(SolutionDir)lib\applaunch-framework\AppLaunch.Admin.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+    <ItemGroup>
+        <Reference Include="AppLaunch.Services">
+            <HintPath>$(SolutionDir)lib\applaunch-framework\AppLaunch.Services.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+    <ItemGroup>
+        <Reference Include="AppLaunch.Models">
+            <HintPath>$(SolutionDir)lib\applaunch-framework\AppLaunch.Models.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+    <ItemGroup>
+        <Reference Include="AppLaunch.Themes">
+            <HintPath>$(SolutionDir)lib\applaunch-framework\AppLaunch.Themes.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="BlazorTemplater"/>
+        <PackageReference Include="Extensions.MudBlazor.StaticInput" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication"/>
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore"/>
         <PackageReference Include="Microsoft.AspNetCore.Identity.UI"/>
