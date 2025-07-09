@@ -8,25 +8,14 @@
         <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <RestoreAdditionalProjectSources>$(SolutionDir)packages</RestoreAdditionalProjectSources>
+    </PropertyGroup>
     <ItemGroup>
-        <Reference Include="AppLaunch.Admin">
-            <HintPath>$(SolutionDir)lib\applaunch-framework\AppLaunch.Admin.dll</HintPath>
-        </Reference>
-    </ItemGroup>
-    <ItemGroup>
-        <Reference Include="AppLaunch.Services">
-            <HintPath>$(SolutionDir)lib\applaunch-framework\AppLaunch.Services.dll</HintPath>
-        </Reference>
-    </ItemGroup>
-    <ItemGroup>
-        <Reference Include="AppLaunch.Models">
-            <HintPath>$(SolutionDir)lib\applaunch-framework\AppLaunch.Models.dll</HintPath>
-        </Reference>
-    </ItemGroup>
-    <ItemGroup>
-        <Reference Include="AppLaunch.Themes">
-            <HintPath>$(SolutionDir)lib\applaunch-framework\AppLaunch.Themes.dll</HintPath>
-        </Reference>
+        <PackageReference Include="AppLaunch.Services" />
+        <PackageReference Include="AppLaunch.Admin" />
+        <PackageReference Include="AppLaunch.Models" />
+        <PackageReference Include="AppLaunch.Themes" />
     </ItemGroup>
 
     <ItemGroup>
