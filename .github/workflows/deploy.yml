@@ -37,10 +37,12 @@ jobs:
       - name: Create dummy PluginData folder
         run: mkdir -p app-launch-template/applaunch/PluginData
     
+      - name: Debug restore source path
+        run: ls -R app-launch-packages
+
+      
       - name: Publish .NET 9 Project
         run: dotnet restore app-launch-template/AppLaunch/AppLaunch.Core.csproj
-
-        
 
       - name: Install LFTP
         run: sudo apt-get update && sudo apt-get install -y lftp
