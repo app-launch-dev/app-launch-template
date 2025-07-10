@@ -38,7 +38,7 @@ jobs:
         run: mkdir -p app-launch-template/applaunch/PluginData
     
       - name: Publish .NET 9 Project
-        run: dotnet restore app-launch-template/AppLaunch/AppLaunch.Core.csproj
+        run: dotnet restore AppLaunch/AppLaunch.Core.csproj
 
         
 
