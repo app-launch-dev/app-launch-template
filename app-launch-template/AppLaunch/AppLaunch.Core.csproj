@@ -49,5 +49,10 @@
       </None>
     </ItemGroup>
 
-
+    <ItemGroup>
+        <Content Include="../../applaunch_lastupdate.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+    
 </Project>
