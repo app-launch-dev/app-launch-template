@@ -45,12 +45,6 @@ jobs:
             ':!PluginSource/' \
             ':!PluginData/'
 
-          # ✅ Explicitly include Directory.Packages.props
-          git checkout upstream/main -- Directory.Packages.props || {
-            echo "⚠️ Directory.Packages.props not found in upstream/main"
-            exit 1
-          }
-
           git add .
           git commit -m "🔄 Synced upstream template updates (protected files excluded)" || echo "✅ No changes to commit"
 
