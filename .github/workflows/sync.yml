@@ -30,10 +30,10 @@ jobs:
           git config user.name "AppLaunch Template Bot"
           git config user.email "bot@applaunch.dev"
 
-      - name: Add upstream template and fetch latest changes
+      - name: Add upstream template and fetch full history
         run: |
           git remote add upstream https://github.com/app-launch-dev/app-launch-template.git || true
-          git fetch upstream
+          git fetch upstream --depth=0
 
       - name: 🧼 Checkout upstream changes except protected files
         run: |
@@ -45,8 +45,11 @@ jobs:
             ':!PluginSource/' \
             ':!PluginData/'
 
-          # Explicitly include Directory.Packages.props
-          git checkout upstream/main -- Directory.Packages.props
+          # ✅ Explicitly include Directory.Packages.props
+          git checkout upstream/main -- Directory.Packages.props || {
+            echo "⚠️ Directory.Packages.props not found in upstream/main"
+            exit 1
+          }
 
           git add .
           git commit -m "🔄 Synced upstream template updates (protected files excluded)" || echo "✅ No changes to commit"
