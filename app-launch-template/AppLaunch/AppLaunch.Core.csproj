@@ -10,7 +10,7 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <RestoreAdditionalProjectSources>$(SolutionDir)packages</RestoreAdditionalProjectSources>
+        <RestoreAdditionalProjectSources>$(SolutionDir)app-launch-packages</RestoreAdditionalProjectSources>
         <RestoreAdditionalProjectSources>$(SolutionDir)app-launch-template\applaunch\PluginData</RestoreAdditionalProjectSources>
 
     </PropertyGroup>
