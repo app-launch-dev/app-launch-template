@@ -41,8 +41,11 @@ jobs:
         run: ls -R app-launch-packages
 
       
-      - name: Publish .NET 9 Project
+      - name: Restore Project
         run: dotnet restore app-launch-template/AppLaunch/AppLaunch.Core.csproj
+
+      - name: Publish Project
+        run: dotnet publish app-launch-template/AppLaunch/AppLaunch.Core.csproj -c Debug -o publish_output
 
       - name: Install LFTP
         run: sudo apt-get update && sudo apt-get install -y lftp
