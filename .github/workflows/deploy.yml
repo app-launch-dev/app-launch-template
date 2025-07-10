@@ -38,7 +38,8 @@ jobs:
         run: mkdir -p app-launch-template/applaunch/PluginData
     
       - name: Publish .NET 9 Project
-        run: dotnet publish -c Debug -o publish_output
+        run: dotnet publish -c Debug -o publish_output /p:SolutionDir=${{ github.workspace }}/
+
 
       - name: Install LFTP
         run: sudo apt-get update && sudo apt-get install -y lftp
