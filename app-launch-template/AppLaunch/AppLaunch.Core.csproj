@@ -8,10 +8,12 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <RestoreAdditionalProjectSources>$(MSBuildThisFileDirectory)../../app-launch-packages</RestoreAdditionalProjectSources>
-        <RestoreAdditionalProjectSources>$(MSBuildThisFileDirectory)../../app-launch-template/applaunch/PluginData</RestoreAdditionalProjectSources>
-
+        <RestoreAdditionalProjectSources>
+            $(MSBuildThisFileDirectory)../../app-launch-packages;
+            $(MSBuildThisFileDirectory)../../app-launch-template/applaunch/PluginData
+        </RestoreAdditionalProjectSources>
     </PropertyGroup>
+
     <ItemGroup>
         <PackageReference Include="AppLaunch.Services" />
         <PackageReference Include="AppLaunch.Admin" />
