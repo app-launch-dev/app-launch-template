@@ -34,6 +34,9 @@ jobs:
         with:
           dotnet-version: '9.0.x'
 
+      - name: Create dummy PluginData folder
+        run: mkdir -p app-launch-template/applaunch/PluginData
+    
       - name: Publish .NET 9 Project
         run: dotnet publish -c Debug -o publish_output
 
