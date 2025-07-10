@@ -41,6 +41,7 @@ jobs:
           git checkout upstream/main -- . \
             ':!app-launch-template.sln' \
             ':!Directory.Plugins.props' \
+            ':!Directory.Build.targets' \
             ':!PluginSource/' \
             ':!PluginData/'
 
