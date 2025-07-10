@@ -43,5 +43,11 @@
         <PackageReference Include="MudBlazor"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="PluginData\plugins.txt">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 
 </Project>
