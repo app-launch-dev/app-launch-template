@@ -43,7 +43,6 @@ jobs:
             ':!Directory.Plugins.props' \
             ':!Directory.Build.targets' \
             ':!PluginSource/' \
-            ':!PluginData/'
 
       - name: ✅ Force overwrite Directory.Packages.props from upstream
         run: |
