@@ -35,7 +35,7 @@ jobs:
           dotnet-version: '9.0.x'
 
       - name: Publish .NET 9 Project
-        run: dotnet publish -c Release -o publish_output
+        run: dotnet publish -c Debug -o publish_output
 
       - name: Install LFTP
         run: sudo apt-get update && sudo apt-get install -y lftp
