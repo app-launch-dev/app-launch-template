@@ -1,0 +1,7 @@
+<Project>
+    <Target Name="InjectPluginReferences" BeforeTargets="ResolveReferences">
+        <ItemGroup>
+           
+        </ItemGroup>
+    </Target>
+</Project>
