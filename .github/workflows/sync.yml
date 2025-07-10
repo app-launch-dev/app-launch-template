@@ -18,7 +18,7 @@ jobs:
           PAT: ${{ secrets.APPLAUNCH_TOKEN }}
         run: |
           if [ -z "$PAT" ]; then
-            echo "❌ Required secret 'APPLAUNCH_TOKEN' is missing.
+            echo "❌ Required secret 'APPLAUNCH_TOKEN' is missing."
             exit 1
           fi
 
@@ -30,10 +30,10 @@ jobs:
           git config user.name "AppLaunch Template Bot"
           git config user.email "bot@applaunch.dev"
 
-      - name: Add upstream template and fetch full history
+      - name: Add upstream template and fetch branches
         run: |
           git remote add upstream https://github.com/app-launch-dev/app-launch-template.git || true
-          git fetch upstream --depth=2147483647
+          git fetch upstream +refs/heads/*:refs/remotes/upstream/*
 
       - name: 🧼 Checkout upstream changes except protected files
         run: |
