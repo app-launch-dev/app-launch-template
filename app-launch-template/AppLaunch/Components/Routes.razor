@@ -1,32 +1,24 @@
 ﻿@using System.Reflection
-@inject PluginManager PluginManager
 
 <Router AppAssembly="typeof(Program).Assembly" AdditionalAssemblies="@additionalAssemblies">
     <Found Context="routeData">
         <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(AppLaunch.Themes.Layout.AppLaunchDefault)">
             <NotAuthorized>
-                <RedirectToLogin/>
+                <RedirectToLogin />
             </NotAuthorized>
         </AuthorizeRouteView>
     </Found>
 </Router>
-
 @code {
     private List<Assembly> additionalAssemblies = new();
 
     protected override async Task OnInitializedAsync()
     {
-        additionalAssemblies.Add(typeof(AppLaunch.Admin._Imports).Assembly);
-
-        var runningPlugins = PluginManager.LoadRunningPlugins();
-        foreach (var pluginName in runningPlugins)
-        {
-            var assembly = PluginManager.GetPluginAssembly(pluginName);
-            if (assembly != null)
-            {
-                additionalAssemblies.Add(assembly);
-            }
-        }
+        additionalAssemblies = new List<Assembly> { typeof(AppLaunch.Admin._Imports).Assembly };
+        var pluginlAssemblies = AppDomain.CurrentDomain
+            .GetAssemblies()
+            .Where(a => a.GetName().Name?.ToLower().Contains("plugins") == true)
+            .ToList();
+       if (pluginlAssemblies.Count>0) additionalAssemblies.AddRange(pluginlAssemblies);
     }
-
 }
