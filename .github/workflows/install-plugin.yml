@@ -1,0 +1,69 @@
+name: Install Plugin
+
+on:
+  workflow_dispatch:
+    inputs:
+      pluginId:
+        description: "NuGet package ID of the plugin"
+        required: true
+        type: string
+      pluginVersion:
+        description: "Version of the plugin to install"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  install-plugin:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Git
+        run: |
+          git config user.name "AppLaunch Bot"
+          git config user.email "bot@applaunch.dev"
+
+      - name: Inject plugin into MSBuild files
+        run: |
+          PLUGIN_ID="${{ inputs.pluginId }}"
+          PLUGIN_VERSION="${{ inputs.pluginVersion }}"
+
+          # Inject into Directory.Plugin.Props if missing
+          if ! grep -q "Include=\"$PLUGIN_ID\"" Directory.Plugin.Props; then
+            xmlstarlet ed --inplace \
+              -s "/Project/ItemGroup" -t elem -n PackageVersion -v "" \
+              -i "/Project/ItemGroup/PackageVersion[last()]" -t attr -n Include -v "$PLUGIN_ID" \
+              -i "/Project/ItemGroup/PackageVersion[last()]" -t attr -n Version -v "$PLUGIN_VERSION" \
+              Directory.Plugin.Props
+            echo "✔️ Added $PLUGIN_ID to Directory.Plugin.Props"
+          else
+            echo "✅ $PLUGIN_ID already exists in Directory.Plugin.Props"
+          fi
+
+          # Inject into Directory.Build.targets if missing
+          if ! grep -q "Include=\"$PLUGIN_ID\"" Directory.Build.targets; then
+            xmlstarlet ed --inplace \
+              -s "/Project/Target/ItemGroup" -t elem -n PackageReference -v "" \
+              -i "/Project/Target/ItemGroup/PackageReference[last()]" -t attr -n Include -v "$PLUGIN_ID" \
+              -i "/Project/Target/ItemGroup/PackageReference[last()]" -t attr -n Version -v "$PLUGIN_VERSION" \
+              Directory.Build.targets
+            echo "✔️ Added $PLUGIN_ID to Directory.Build.targets"
+          else
+            echo "✅ $PLUGIN_ID already exists in Directory.Build.targets"
+          fi
+
+      - name: Commit changes
+        run: |
+          git add Directory.Plugin.Props Directory.Build.targets
+          git commit -m "Install plugin ${{ inputs.pluginId }} v${{ inputs.pluginVersion }}" || echo "No changes to commit"
+
+      - name: Push to main
+        run: git push origin main
