@@ -12,6 +12,7 @@
             $(MSBuildThisFileDirectory)../../app-launch-packages;
             $(MSBuildThisFileDirectory)../../app-launch-template/applaunch/PluginData
         </RestoreAdditionalProjectSources>
+        <Import Project="Directory.Build.targets" />
     </PropertyGroup>
 
     <ItemGroup>

@@ -1,4 +1,4 @@
-name: Install Plugin
+name: AppLaunch Install Plugin
 
 on:
   workflow_dispatch:
@@ -26,6 +26,9 @@ jobs:
           ref: main
           fetch-depth: 0
 
+      - name: Install xmlstarlet
+        run: sudo apt-get update && sudo apt-get install -y xmlstarlet
+
       - name: Set up Git
         run: |
           git config user.name "AppLaunch Bot"
@@ -36,16 +39,16 @@ jobs:
           PLUGIN_ID="${{ inputs.pluginId }}"
           PLUGIN_VERSION="${{ inputs.pluginVersion }}"
 
-          # Inject into Directory.Plugin.Props if missing
-          if ! grep -q "Include=\"$PLUGIN_ID\"" Directory.Plugin.Props; then
+          # Inject into Directory.Plugins.props if missing
+          if ! grep -q "Include=\"$PLUGIN_ID\"" Directory.Plugins.props; then
             xmlstarlet ed --inplace \
               -s "/Project/ItemGroup" -t elem -n PackageVersion -v "" \
               -i "/Project/ItemGroup/PackageVersion[last()]" -t attr -n Include -v "$PLUGIN_ID" \
               -i "/Project/ItemGroup/PackageVersion[last()]" -t attr -n Version -v "$PLUGIN_VERSION" \
-              Directory.Plugin.Props
-            echo "✔️ Added $PLUGIN_ID to Directory.Plugin.Props"
+              Directory.Plugins.props
+            echo "✔️ Added $PLUGIN_ID to Directory.Plugins.props"
           else
-            echo "✅ $PLUGIN_ID already exists in Directory.Plugin.Props"
+            echo "✅ $PLUGIN_ID already exists in Directory.Plugins.props"
           fi
 
           # Inject into Directory.Build.targets if missing
@@ -53,16 +56,15 @@ jobs:
             xmlstarlet ed --inplace \
               -s "/Project/Target/ItemGroup" -t elem -n PackageReference -v "" \
               -i "/Project/Target/ItemGroup/PackageReference[last()]" -t attr -n Include -v "$PLUGIN_ID" \
-              -i "/Project/Target/ItemGroup/PackageReference[last()]" -t attr -n Version -v "$PLUGIN_VERSION" \
               Directory.Build.targets
-            echo "✔️ Added $PLUGIN_ID to Directory.Build.targets"
+            echo "✔️ Added $PLUGIN_ID to Directory.Build.targets (no version)"
           else
             echo "✅ $PLUGIN_ID already exists in Directory.Build.targets"
           fi
 
       - name: Commit changes
         run: |
-          git add Directory.Plugin.Props Directory.Build.targets
+          git add Directory.Plugins.props Directory.Build.targets
           git commit -m "Install plugin ${{ inputs.pluginId }} v${{ inputs.pluginVersion }}" || echo "No changes to commit"
 
       - name: Push to main
