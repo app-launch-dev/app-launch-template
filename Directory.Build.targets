@@ -1,7 +1,6 @@
+<?xml version="1.0"?>
 <Project>
-    <Target Name="InjectPluginReferences" BeforeTargets="ResolveReferences">
-        <ItemGroup>
-           
-        </ItemGroup>
-    </Target>
+    <ItemGroup>
+
+    </ItemGroup>
 </Project>
