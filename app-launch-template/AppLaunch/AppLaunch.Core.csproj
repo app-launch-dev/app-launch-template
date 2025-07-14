@@ -12,9 +12,8 @@
             $(MSBuildThisFileDirectory)../../app-launch-packages;
             $(MSBuildThisFileDirectory)../../app-launch-template/applaunch/PluginData
         </RestoreAdditionalProjectSources>
-        <Import Project="Directory.Build.targets" />
     </PropertyGroup>
-
+    
     <ItemGroup>
         <PackageReference Include="AppLaunch.Services" />
         <PackageReference Include="AppLaunch.Admin" />
@@ -43,6 +42,8 @@
         <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design"/>
         <PackageReference Include="MudBlazor"/>
     </ItemGroup>
+
+    <Import Project="../../Directory.Build.targets" />
 
     <ItemGroup>
       <None Update="PluginData\plugins.txt">
