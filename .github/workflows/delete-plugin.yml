@@ -44,6 +44,19 @@ jobs:
             -d "/Project/ItemGroup/PackageReference[@Include='$PLUGIN_ID']" \
             Directory.Build.targets || echo "🔍 PackageReference not found in Directory.Build.targets"
 
+          # Rehydrate ItemGroup if it's collapsed
+          if ! grep -q "<PackageReference" Directory.Build.targets; then
+            xmlstarlet ed --inplace \
+              -s "/Project" -t elem -n ItemGroup -v "" \
+              Directory.Build.targets
+          fi
+
+          if ! grep -q "<PackageVersion" Directory.Plugins.props; then
+            xmlstarlet ed --inplace \
+              -s "/Project" -t elem -n ItemGroup -v "" \
+              Directory.Plugins.props
+          fi
+
           echo "🧹 Cleaned up $PLUGIN_ID from props and targets"
 
       - name: Commit changes
