@@ -1,0 +1,59 @@
+name: AppLaunch Upgrade Plugin
+
+on:
+  workflow_dispatch:
+    inputs:
+      pluginId:
+        description: "NuGet package ID of the plugin"
+        required: true
+        type: string
+      pluginVersion:
+        description: "New version to upgrade to"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  upgrade-plugin:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Install xmlstarlet
+        run: sudo apt-get update && sudo apt-get install -y xmlstarlet
+
+      - name: Set up Git
+        run: |
+          git config user.name "AppLaunch Bot"
+          git config user.email "bot@applaunch.dev"
+
+      - name: Upgrade plugin version in Directory.Plugins.props
+        run: |
+          PLUGIN_ID="${{ inputs.pluginId }}"
+          PLUGIN_VERSION="${{ inputs.pluginVersion }}"
+
+          if grep -q "Include=\"$PLUGIN_ID\"" Directory.Plugins.props; then
+            xmlstarlet ed --inplace \
+              -u "/Project/ItemGroup/PackageVersion[@Include='$PLUGIN_ID']/@Version" \
+              -v "$PLUGIN_VERSION" \
+              Directory.Plugins.props
+            echo "🔄 Updated $PLUGIN_ID to version $PLUGIN_VERSION"
+          else
+            echo "❌ Plugin $PLUGIN_ID not found in Directory.Plugins.props"
+            exit 1
+          fi
+
+      - name: Commit changes
+        run: |
+          git add Directory.Plugins.props
+          git commit -m "Upgrade plugin ${{ inputs.pluginId }} to v${{ inputs.pluginVersion }}" || echo "No changes to commit"
+
+      - name: Push to main
+        run: git push origin main
