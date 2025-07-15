@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <Project>
     <ItemGroup>
-
+         <!-- Plugin references will be injected here -->
     </ItemGroup>
 </Project>
