@@ -34,6 +34,22 @@ jobs:
           git config user.name "AppLaunch Bot"
           git config user.email "bot@applaunch.dev"
 
+      - name: Ensure XML structure
+        run: |
+          # Ensure ItemGroup exists in Directory.Plugins.props
+          if ! grep -q "<ItemGroup>" Directory.Plugins.props; then
+            xmlstarlet ed --inplace \
+              -s "/Project" -t elem -n ItemGroup -v "" \
+              Directory.Plugins.props
+          fi
+
+          # Ensure ItemGroup exists in Directory.Build.targets
+          if ! grep -q "<ItemGroup>" Directory.Build.targets; then
+            xmlstarlet ed --inplace \
+              -s "/Project" -t elem -n ItemGroup -v "" \
+              Directory.Build.targets
+          fi
+
       - name: Inject plugin into MSBuild files
         run: |
           PLUGIN_ID="${{ inputs.pluginId }}"
@@ -54,8 +70,8 @@ jobs:
           # Inject into Directory.Build.targets if missing
           if ! grep -q "Include=\"$PLUGIN_ID\"" Directory.Build.targets; then
             xmlstarlet ed --inplace \
-              -s "/Project/Target/ItemGroup" -t elem -n PackageReference -v "" \
-              -i "/Project/Target/ItemGroup/PackageReference[last()]" -t attr -n Include -v "$PLUGIN_ID" \
+              -s "/Project/ItemGroup" -t elem -n PackageReference -v "" \
+              -i "/Project/ItemGroup/PackageReference[last()]" -t attr -n Include -v "$PLUGIN_ID" \
               Directory.Build.targets
             echo "✔️ Added $PLUGIN_ID to Directory.Build.targets (no version)"
           else
