@@ -56,4 +56,9 @@ jobs:
           git commit -m "Upgrade plugin ${{ inputs.pluginId }} to v${{ inputs.pluginVersion }}" || echo "No changes to commit"
 
       - name: Push to main
-        run: git push origin main
+        env:
+          GH_PAT: ${{ secrets.APPLAUNCH_TOKEN }}
+        run: |
+          git remote set-url origin https://x-access-token:${GH_PAT}@github.com/${{ github.repository }}
+          git push origin main
+
