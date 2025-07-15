@@ -1,0 +1,55 @@
+name: AppLaunch Delete Plugin
+
+on:
+  workflow_dispatch:
+    inputs:
+      pluginId:
+        description: "NuGet package ID of the plugin"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  delete-plugin:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Install xmlstarlet
+        run: sudo apt-get update && sudo apt-get install -y xmlstarlet
+
+      - name: Set up Git
+        run: |
+          git config user.name "AppLaunch Bot"
+          git config user.email "bot@applaunch.dev"
+
+      - name: Remove plugin entries from MSBuild files
+        run: |
+          PLUGIN_ID="${{ inputs.pluginId }}"
+
+          # Remove PackageVersion from Directory.Plugins.props
+          xmlstarlet ed --inplace \
+            -d "/Project/ItemGroup/PackageVersion[@Include='$PLUGIN_ID']" \
+            Directory.Plugins.props || echo "🔍 Plugin version not found in Directory.Plugins.props"
+
+          # Remove PackageReference from Directory.Build.targets
+          xmlstarlet ed --inplace \
+            -d "/Project/ItemGroup/PackageReference[@Include='$PLUGIN_ID']" \
+            Directory.Build.targets || echo "🔍 PackageReference not found in Directory.Build.targets"
+
+          echo "🧹 Cleaned up $PLUGIN_ID from props and targets"
+
+      - name: Commit changes
+        run: |
+          git add Directory.Plugins.props Directory.Build.targets
+          git commit -m "Delete plugin ${{ inputs.pluginId }}" || echo "No changes to commit"
+
+      - name: Push to main
+        run: git push origin main
