@@ -43,7 +43,7 @@
         <PackageReference Include="MudBlazor"/>
     </ItemGroup>
 
-    <Import Project="../../Directory.Build.targets" />
+    <Import Project="../../Development.Local.props" Condition="Exists('../../Development.Local.props')" />
 
     <ItemGroup>
       <None Update="PluginData\plugins.txt">
