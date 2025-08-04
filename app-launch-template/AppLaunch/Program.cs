@@ -24,10 +24,6 @@ builder.Services.AddDbContext<ApplicationDbContext>((serviceProvider, options) =
         
         options.ConfigureWarnings(warnings => 
             warnings.Ignore(RelationalEventId.PendingModelChangesWarning));
-        options.UseSqlServer(
-            connectionString,
-            sqlOptions => sqlOptions.MigrationsAssembly("AppLaunch.Services")
-        );
     },
     contextLifetime: ServiceLifetime.Scoped,
     optionsLifetime: ServiceLifetime.Singleton
@@ -41,10 +37,7 @@ builder.Services.AddDbContextFactory<ApplicationDbContext>((serviceProvider, opt
         
         options.ConfigureWarnings(warnings =>
             warnings.Ignore(RelationalEventId.PendingModelChangesWarning));
-        options.UseSqlServer(
-            connectionString,
-            sqlOptions => sqlOptions.MigrationsAssembly("AppLaunch.Services")
-        );
+       
     }
 );
 
